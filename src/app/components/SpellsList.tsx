@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Filters } from './Filters';
 
@@ -30,15 +30,21 @@ interface SpellsListProps {
 }
 
 export const SpellsList = ({ spells } : SpellsListProps) => {
-  //const [selectedComponents, setSelectedComponents] = React.useState<string[]>(["v", "s", "m"]);
-  const canCastSpell = (classes: string, circles: string, archetype: string) => {
-    return `${classes} ${circles} ${archetype}`;
-  }
+  const [canCastSpells, setCanCastSpells] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    const spellCastingInfo: { [key: string]: string } = {};
+    spells.forEach(spell => {
+      spellCastingInfo[spell.slug] = `${spell.dnd_class} ${spell.circles} ${spell.archetype}`;
+    });
+    setCanCastSpells(spellCastingInfo);
+  }, [spells]);
+
 
   return (
-    <div className='flex gap-8 justify-between'>
+    <div>
       <Filters />
-      <Table className='ml-80 w-fit'>
+      <Table className='ml-8 w-fit'>
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
@@ -61,7 +67,7 @@ export const SpellsList = ({ spells } : SpellsListProps) => {
               <TableCell>{spell.components}</TableCell>
               <TableCell>{spell.duration}</TableCell>
               <TableCell>{spell.casting_time}</TableCell>
-              <TableCell>{canCastSpell(spell.dnd_class, spell.circles, spell.archetype)}</TableCell>
+              <TableCell>{canCastSpells[spell.slug]}</TableCell>
             </TableRow>
           ))}
         </TableBody>

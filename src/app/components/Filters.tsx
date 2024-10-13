@@ -8,12 +8,35 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTrigger } from "@/components/ui/sheet"
 import { Checkbox } from "@nextui-org/react"
+import { useCallback } from "react"
 
 export const Filters = () => {
+
+  const onApplyFilters = useCallback(() => {
+    console.log('Filters applied');
+  }, []);
+
+  const breakenWord = (text: string) => text.split('');
+
   return (
-    <div className='fixed flex flex-col gap-2 shadow-md h-fit p-4'>
-        <h2 className='text-2xl font-semibold'>Filters:</h2>
+    <Sheet>
+      <SheetTrigger asChild>
+      <button
+        type="button"
+        className="z-10 fixed top-1/4 left-0 translate-y-1/2 border border-black shadow-md p-4 font-semibold hover:bg-slate-300 transition-colors"
+      >
+        {breakenWord('Filters').map((letter, index) => (
+          <span key={index} className="block">{letter}</span>
+        ))}
+      </button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[400px] sm:w-[540px] h-[400px]">
+        <SheetHeader>
+          <h2 className='text-2xl font-semibold'>Filters:</h2>
+        </SheetHeader>
+    <div className='flex flex-col gap-2 shadow-md h-fit p-4'>
         <div className='flex gap-2 items-center justify-between'>
           <p>Level:</p>
           <Select>
@@ -102,7 +125,7 @@ export const Filters = () => {
               <SelectValue placeholder="Select a sort" />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
+              <SelectGroup defaultValue={"alphabetical"}>
                 <SelectLabel>Sort by</SelectLabel>
                 <SelectItem value={"alphabetical"}>Alphabetical</SelectItem>
                 <SelectItem value={"level"}>Level</SelectItem>
@@ -111,7 +134,11 @@ export const Filters = () => {
             </SelectContent>
           </Select>
         </div>
-        <Button>Apply filters</Button>
+        <SheetFooter>
+        <Button variant="default" onClick={() => onApplyFilters()}>Apply filters</Button>
+        </SheetFooter>
       </div>
+      </SheetContent>
+    </Sheet>
   )
 }
