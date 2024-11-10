@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Filters } from './Filters';
+import { Input } from '@/components/ui/input';
+import { SpellsTable } from './SpellsTable';
 
-interface Spell {
+export interface Spell {
   id: number;
   slug: string;
   name: string;
@@ -31,6 +32,8 @@ interface SpellsListProps {
 
 export const SpellsList = ({ spells } : SpellsListProps) => {
   const [canCastSpells, setCanCastSpells] = useState<{ [key: string]: string }>({});
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filteredSpells, setFilteredSpells] = useState<Spell[]>(spells);
 
   useEffect(() => {
     const spellCastingInfo: { [key: string]: string } = {};
@@ -40,38 +43,36 @@ export const SpellsList = ({ spells } : SpellsListProps) => {
     setCanCastSpells(spellCastingInfo);
   }, [spells]);
 
+  const breakenWord = (text: string) => text.split('');
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = event.target.value;
+    setFilteredSpells(spells.filter(spell => spell.name.toLowerCase().includes(searchValue.toLowerCase())));
+  }
 
   return (
     <div>
-      <Filters />
-      <Table className='ml-8 w-fit'>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Level</TableHead>
-            <TableHead>School</TableHead>
-            <TableHead>Range</TableHead>
-            <TableHead>Components</TableHead>
-            <TableHead>Duration</TableHead>
-            <TableHead>Casting Time</TableHead>
-            <TableHead>Who can cast</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {spells.map(spell => (
-            <TableRow key={spell.slug}>
-              <TableCell>{spell.name}</TableCell>
-              <TableCell>{spell.spell_level}</TableCell>
-              <TableCell>{spell.school}</TableCell>
-              <TableCell>{spell.range}</TableCell>
-              <TableCell>{spell.components}</TableCell>
-              <TableCell>{spell.duration}</TableCell>
-              <TableCell>{spell.casting_time}</TableCell>
-              <TableCell>{canCastSpells[spell.slug]}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div>
+        <Filters
+          setFiltersOpen={setFiltersOpen}
+          className={`fixed left-0 bg-white p-4 z-20 transition-transform duration-300 ${filtersOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        />
+      </div>
+      {!filtersOpen && (
+        <button
+        type="button"
+        className="z-10 fixed top-1/4 left-0 border border-black shadow-md p-4 font-semibold hover:bg-slate-300 transition-colors"
+        onClick={() => setFiltersOpen(!filtersOpen)}
+      >
+        {breakenWord('Filters').map((letter, index) => (
+          <span key={index} className="block">{letter}</span>
+        ))}
+      </button>
+      )}
+      <div>
+        <Input type="text" placeholder="Search by spell name" className="w-full p-4 border border-black" onChange={handleSearch}/>
+      </div>
+      <SpellsTable spells={filteredSpells} canCastSpells={canCastSpells} />
     </div>
   );
 };

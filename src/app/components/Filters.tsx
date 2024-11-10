@@ -8,35 +8,34 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTrigger } from "@/components/ui/sheet"
-import { Checkbox } from "@nextui-org/react"
+import { Checkbox, cn } from "@nextui-org/react"
 import { useCallback } from "react"
+import { Cross2Icon } from "@radix-ui/react-icons"
 
-export const Filters = () => {
+interface FiltersProps {
+  className: string;
+  setFiltersOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
 
+export const Filters = (props: FiltersProps) => {
+  const { className, setFiltersOpen } = props;
+  
   const onApplyFilters = useCallback(() => {
     console.log('Filters applied');
   }, []);
 
-  const breakenWord = (text: string) => text.split('');
+  const onSubmit = useCallback(() => {
+  }, []);
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-      <button
-        type="button"
-        className="z-10 fixed top-1/4 left-0 translate-y-1/2 border border-black shadow-md p-4 font-semibold hover:bg-slate-300 transition-colors"
-      >
-        {breakenWord('Filters').map((letter, index) => (
-          <span key={index} className="block">{letter}</span>
-        ))}
-      </button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[400px] sm:w-[540px] h-[400px]">
-        <SheetHeader>
-          <h2 className='text-2xl font-semibold'>Filters:</h2>
-        </SheetHeader>
-    <div className='flex flex-col gap-2 shadow-md h-fit p-4'>
+    <form className={cn("w-fit h-fit shadow-lg shadow-slate-800", className)} onSubmit={() => onSubmit()}>
+      <div className="flex justify-between items-center">
+        <h2 className='text-2xl font-semibold px-4'>Filters:</h2>
+        <button type="button" className="hover:bg-slate-200 rounded size-7" onClick={(prev) => setFiltersOpen(!prev)}>
+          <Cross2Icon className='w-6 h-6 m-auto' />
+        </button>
+      </div>
+      <div className='flex flex-col gap-2 h-fit p-4'>
         <div className='flex gap-2 items-center justify-between'>
           <p>Level:</p>
           <Select>
@@ -134,11 +133,8 @@ export const Filters = () => {
             </SelectContent>
           </Select>
         </div>
-        <SheetFooter>
         <Button variant="default" onClick={() => onApplyFilters()}>Apply filters</Button>
-        </SheetFooter>
       </div>
-      </SheetContent>
-    </Sheet>
+    </form>
   )
 }
